@@ -1,0 +1,24 @@
+{
+  "name": "trop_bot",
+  "version": "1.0.4",
+  "description": "discord bot",
+  "main": "bot.js",
+  "scripts": {
+    "start": "node bot.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/hans-meister98/trop-bot.git"
+  },
+  "author": "hans",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/hans-meister98/trop-bot/issues"
+  },
+  "homepage": "https://github.com/hans-meister98/trop-bot#readme",
+  "dependencies": {
+    "cheerio": "^1.0.0-rc.3",
+    "discord.js": "^11.5.0",
+    "request": "^2.88.0"
+  }
+}
