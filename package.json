@@ -1,6 +1,6 @@
 {
-  "name": "trop_bot2",
-  "version": "1.0.4",
+  "name": "trop_bot",
+  "version": "1.0.5",
   "description": "discord bot",
   "main": "bot.js",
   "scripts": {
@@ -19,7 +19,6 @@
   "dependencies": {
     "cheerio": "^1.0.0-rc.3",
     "discord.js": "^11.5.0",
-	"puppeteer": "^1.17.0",
     "request": "^2.88.0"
   }
 }

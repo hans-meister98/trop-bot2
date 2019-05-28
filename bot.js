@@ -3,7 +3,6 @@ const bot = new Discord.Client();
 
 var request = require('request');
 var cheerio = require('cheerio');
-var puppeteer = require('puppeteer');
 
 var Command = require('./command.js');
 
@@ -166,20 +165,37 @@ bot.on('message', msg => {
     }
 	
 	//create watch-together room
-	if (msg.content === commands[4].getCallName()){
-        let wtUrl = 'https://www.watch2gether.com/';
-        (async () => {
+	if(msg.content === commands[4].getCallName()){
 
-            const browser = await puppeteer.launch({ headless: true });
-            const page = await browser.newPage();
+		let url = 'https://www.watch2gether.com';
+		request(url, function (error, response, html) {
+			if (!error) {
+				let $ = cheerio.load(html);
+				let s = '';
 
-            await page.goto(wtUrl);
-            await page.$eval('#create_room_form', form => form.submit())
+				$('#create_room_form').filter(function () {
+					let data = $(this);
+					utf8 = data.find('#create_room_form > input[type="hidden"]:nth-child(1)').val();
+					authToken = data.find('#create_room_form > input[type="hidden"]:nth-child(2)').val();
+				});
 
-            await msg.reply(page.url());
-			page.close();
-			})();
-		}
+				var myJSONObject = {'utf8':'✓', 'authenticity_token':authToken};
+
+				request({
+					url: "https://www.watch2gether.com/rooms/create",
+					method: "POST",
+					json: true,   // <--Very important!!!
+					body: myJSONObject
+				}, function (error, response, body){
+					streamkey = response.body['streamkey'];
+					
+					let s = 'https://watch2gether.com/rooms/'+streamkey+'?lang=de';
+					msg.reply(s);
+					console.log(s);
+				});
+				}
+		});
+	}
 });
 
 bot.login(process.env.BOT_TOKEN);
