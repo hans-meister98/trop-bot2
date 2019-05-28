@@ -12,6 +12,10 @@ var baseDate = new Date('5/25/2019');
 var diff = parseInt((now - baseDate) / (1000 * 60 * 60 * 24));
 var i = 20 + diff;
 
+let regularCoolDown = new Set();
+let wtCoolDown = new Set();
+let cdSeconds = 7;
+
 bot.on('ready', () => {
     let channel = bot.channels.get(channelId);
     console.log('TROP_Bot started');
@@ -77,125 +81,155 @@ bot.on('message', msg => {
 	let c_wt = new Command('!wt', 'Erstellt einen neuen Watch2gether Raum.')
 
     let commands = [c_30, c_911, c_aow, c_bot, c_wt];
+	
+	let check = false;
 
-    if (msg.content === commands[0].getCallName()) {
-        let url = 'https://thereligionofpeace.com/attacks/attacks.aspx?Yr=Last30/';
-        request(url, function (error, response, html) {
-            if (!error) {
-                let $ = cheerio.load(html);
-
-                let attacks;
-                let countries;
-                let killed;
-                let injured;
-                let s = '';
-
-                $('#aspnetForm > table > tbody > tr:nth-child(2) > td').filter(function () {
-                    let data = $(this);
-                    attacks = data.find('b:nth-child(6)').text();
-                    countries = data.find('b:nth-child(7)').text();
-                    killed = data.find('b:nth-child(8)').text();
-                    injured = data.find('b:nth-child(9)').text();
-
-                    s = 'in den letzten 30 Tagen gab es ' + attacks + ' islamistische Attacken in ' + countries + ' Ländern.' + ' Dabei wurden ' + killed + ' Menschen getötet und ' + injured + ' verletzt.';
-                    msg.reply(s);
-                });
-            }
-        });
-    }
-
-    if (msg.content === commands[1].getCallName()) {
-        msg.reply('https://www.thereligionofpeace.com/TROP.jpg');
-    }
-
-    if (msg.content === commands[2].getCallName()) {
-        let url = 'https://thereligionofpeace.com';
-        request(url, function (error, response, html) {
-            if (!error) {
-                let $ = cheerio.load(html);
-
-                let text1;
-                let text2;
-                let articleLink;
-                let imageLink;
-                let s = '';
-
-                $('#aspnetForm > table > tbody > tr:nth-child(3) > td:nth-child(1) > table > tbody > tr:nth-child(1) > td').filter(function () {
-                    let data = $(this);
-                    text1 = data.find('a:nth-child(8)').text();
-                    text2 = data.find('a:nth-child(10)').text();
-                    articleLink = '<' + data.find('a:nth-child(8)').attr('href') + '>';
-                    imageLink = 'https://thereligionofpeace.com/' + data.find('img').attr('src');
-
-                    s =
-                        '\n' + '**Atrocity of the week:**' + '\n'
-                        + text1 + ' ' + text2 + '\n'
-                        + articleLink + '\n'
-                        + '\n'
-                        + imageLink;
-                    msg.reply(s);
-                });
-            }
-        });
-    }
-
-//INFO ABOUT BOT AND COMMANDS
-    if (msg.content === commands[3].getCallName()) {
-
-        let cmd_output = [];
-
-        for (let x = 0; x < commands.length; x++) {
-            if (x < commands.length - 1) {
-                cmd_output[x] = commands[x].getCallName() + ' - ' + commands[x].getDefinition() + '\n';
-            } else {
-                cmd_output[x] = commands[x].getCallName() + ' - ' + commands[x].getDefinition();
-            }
+    for (let j = 0; j < commands.length; j++)
+    {
+        if (msg.content === commands[j].getCallName()){
+            check = true;
         }
-
-        let info_text =
-            '\n' + 'TROP_Bot - Statistiken über die Religion des Friedens' + '\n'
-            + 'Quelle: https://thereligionofpeace.com/' + '\n'
-            + '\n'
-            + 'Verfügbare Commands:' + '\n';
-
-        let cmd_string = cmd_output.toString();
-        cmd_string = cmd_string.replace(/,/g, '');
-
-        msg.reply(info_text + cmd_string);
     }
 	
-	//create watch-together room
-	if(msg.content === commands[4].getCallName()){
+	if (check === true && (regularCoolDown.has(msg.author.id) || wtCoolDown.has('created')))
+    {
+        console.log('Spam protection');
+    }
+	
+	 else if (msg.content === commands[4].getCallName() && !wtCoolDown.has('created'))
+    {
+              //watch2gether automatic room creation function
+                let url = 'https://www.watch2gether.com';
+    
+                request(url, function (error, response, html) {
+                    if (!error) {
+                        let $ = cheerio.load(html);
+                        let s = '';
+        
+                        $('#create_room_form').filter(function () {
+                            let data = $(this);
+                            utf8 = data.find('#create_room_form > input[type="hidden"]:nth-child(1)').val();
+                            authToken = data.find('#create_room_form > input[type="hidden"]:nth-child(2)').val();
+                        });
+        
+                        var myJSONObject = {'utf8':'✓', 'authenticity_token':authToken};
+        
+                        request({
+                            url: "https://www.watch2gether.com/rooms/create",
+                            method: "POST",
+                            json: true,   // <--Very important!!!
+                            body: myJSONObject
+                        }, function (error, response, body){
+                            streamkey = response.body['streamkey'];
+                            
+                            let s = 'https://watch2gether.com/rooms/'+streamkey+'?lang=de';
+                            msg.reply(s);
+                            console.log(s);
+                        });
+                        }
+                    });
+                wtCoolDown.add('created');
+                console.log(wtCoolDown)
+                setTimeout(() => {
 
-		let url = 'https://www.watch2gether.com';
-		request(url, function (error, response, html) {
-			if (!error) {
-				let $ = cheerio.load(html);
-				let s = '';
-
-				$('#create_room_form').filter(function () {
-					let data = $(this);
-					utf8 = data.find('#create_room_form > input[type="hidden"]:nth-child(1)').val();
-					authToken = data.find('#create_room_form > input[type="hidden"]:nth-child(2)').val();
-				});
-
-				var myJSONObject = {'utf8':'✓', 'authenticity_token':authToken};
-
-				request({
-					url: "https://www.watch2gether.com/rooms/create",
-					method: "POST",
-					json: true,   // <--Very important!!!
-					body: myJSONObject
-				}, function (error, response, body){
-					streamkey = response.body['streamkey'];
-					
-					let s = 'https://watch2gether.com/rooms/'+streamkey+'?lang=de';
-					msg.reply(s);
-					console.log(s);
-				});
-				}
-		});
+                // Removes the user from the set after 60 seconds
+                wtCoolDown.delete('created');
+                }, 60 * 1000);
 	}
+	
+	else
+	{
+        if (msg.content === commands[0].getCallName()) {
+            let url = 'https://thereligionofpeace.com/attacks/attacks.aspx?Yr=Last30/';
+            request(url, function (error, response, html) {
+                if (!error) {
+                    let $ = cheerio.load(html);
+    
+                    let attacks;
+                    let countries;
+                    let killed;
+                    let injured;
+                    let s = '';
+    
+                    $('#aspnetForm > table > tbody > tr:nth-child(2) > td').filter(function () {
+                        let data = $(this);
+                        attacks = data.find('b:nth-child(6)').text();
+                        countries = data.find('b:nth-child(7)').text();
+                        killed = data.find('b:nth-child(8)').text();
+                        injured = data.find('b:nth-child(9)').text();
+    
+                        s = 'in den letzten 30 Tagen gab es ' + attacks + ' islamistische Attacken in ' + countries + ' Ländern.' + ' Dabei wurden ' + killed + ' Menschen getötet und ' + injured + ' verletzt.';
+                        msg.reply(s);
+                    });
+                }
+            });
+        }
+    
+        if (msg.content === commands[1].getCallName()) {
+            msg.reply('https://www.thereligionofpeace.com/TROP.jpg');
+        }
+    
+        if (msg.content === commands[2].getCallName()) {
+            let url = 'https://thereligionofpeace.com';
+            request(url, function (error, response, html) {
+                if (!error) {
+                    let $ = cheerio.load(html);
+    
+                    let text1;
+                    let text2;
+                    let articleLink;
+                    let imageLink;
+                    let s = '';
+    
+                    $('#aspnetForm > table > tbody > tr:nth-child(3) > td:nth-child(1) > table > tbody > tr:nth-child(1) > td').filter(function () {
+                        let data = $(this);
+                        text1 = data.find('a:nth-child(8)').text();
+                        text2 = data.find('a:nth-child(10)').text();
+                        articleLink = '<' + data.find('a:nth-child(8)').attr('href') + '>';
+                        imageLink = 'https://thereligionofpeace.com/' + data.find('img').attr('src');
+    
+                        s =
+                            '\n' + '**Atrocity of the week:**' + '\n'
+                            + text1 + ' ' + text2 + '\n'
+                            + articleLink + '\n'
+                            + '\n'
+                            + imageLink;
+                        msg.reply(s);
+                    });
+                }
+            });
+        }
+    
+		//INFO ABOUT BOT AND IT'S COMMANDS
+        if (msg.content === commands[3].getCallName()) {
+    
+            let cmd_output = [];
+    
+            for (let x = 0; x < commands.length; x++) {
+                if (x < commands.length - 1) {
+                    cmd_output[x] = commands[x].getCallName() + ' - ' + commands[x].getDefinition() + '\n';
+                } else {
+                    cmd_output[x] = commands[x].getCallName() + ' - ' + commands[x].getDefinition();
+                }
+            }
+    
+            let info_text =
+                '\n' + 'TROP_Bot - Statistiken über die Religion des Friedens' + '\n'
+                + 'Quelle: https://thereligionofpeace.com/' + '\n'
+                + '\n'
+                + 'Verfügbare Commands:' + '\n';
+    
+            let cmd_string = cmd_output.toString();
+            cmd_string = cmd_string.replace(/,/g, '');
+    
+            msg.reply(info_text + cmd_string);
+        }
+    
+        regularCoolDown.add(msg.author.id);
+        setTimeout(() => {// Removes the user from the set after 5 seconds
+         regularCoolDown.delete(msg.author.id);
+        }, cdSeconds * 1000);
+    }
 });
 
 bot.login(process.env.BOT_TOKEN);
