@@ -3,6 +3,7 @@ const bot = new Discord.Client();
 
 var request = require('request');
 var cheerio = require('cheerio');
+var puppeteer = require('puppeteer');
 
 var Command = require('./command.js');
 
@@ -70,13 +71,13 @@ bot.on('presenceUpdate', (oldMember, newMember) => {
 
 bot.on('message', msg => {
 
-    let channel = bot.channels.get('166812372286046208');
     let c_30 = new Command('!30', 'Islamistische Attacken der letzten 30 Tage.');
     let c_911 = new Command('!911', 'Islamistische Attacken seit dem 11. September 2001.');
     let c_aow = new Command('!aow', 'Atrocity of the Week - Gräueltat der Woche.');
     let c_bot = new Command('!bot', 'Informationen über den Bot und seine Commands.');
+	let c_wt = new Command('!wt', 'Erstellt einen neuen Watch2gether Raum.')
 
-    let commands = [c_30, c_911, c_aow, c_bot];
+    let commands = [c_30, c_911, c_aow, c_bot, c_wt];
 
     if (msg.content === commands[0].getCallName()) {
         let url = 'https://thereligionofpeace.com/attacks/attacks.aspx?Yr=Last30/';
@@ -163,6 +164,22 @@ bot.on('message', msg => {
 
         msg.reply(info_text + cmd_string);
     }
+	
+	//create watch-together room
+	if (msg.content === commands[4].getCallName()){
+        let wtUrl = 'https://www.watch2gether.com/';
+        (async () => {
+
+            const browser = await puppeteer.launch({ headless: true });
+            const page = await browser.newPage();
+
+            await page.goto(wtUrl);
+            await page.$eval('#create_room_form', form => form.submit())
+
+            await msg.reply(page.url());
+			page.close();
+			})();
+		}
 });
 
 bot.login(process.env.BOT_TOKEN);
