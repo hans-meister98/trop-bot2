@@ -78,11 +78,10 @@ bot.on('message', msg => {
     let c_911 = new Command('!911', 'Islamistische Attacken seit dem 11. September 2001.');
     let c_aow = new Command('!aow', 'Atrocity of the Week - Gräueltat der Woche.');
     let c_bot = new Command('!bot', 'Informationen über den Bot und seine Commands.');
-	let c_wt = new Command('!wt', 'Erstellt einen neuen Watch2gether Raum.')
+    let c_wt = new Command('!wt', 'Erstellt einen neuen Watch2gether Raum.')
 
     let commands = [c_30, c_911, c_aow, c_bot, c_wt];
-	
-	let check = false;
+    let check = false;
 
     for (let j = 0; j < commands.length; j++)
     {
@@ -90,13 +89,20 @@ bot.on('message', msg => {
             check = true;
         }
     }
-	
-	if (check === true && (regularCoolDown.has(msg.author.id) || wtCoolDown.has('created')))
+
+    if (check === true)
     {
-        console.log('Spam protection');
-    }
-	
-	 else if (msg.content === commands[4].getCallName() && !wtCoolDown.has('created'))
+        if(regularCoolDown.has(msg.author.id))
+        {
+            console.log('Regular Spam protection - caused by ' + msg.author.username);
+        }
+
+        if(wtCoolDown.has('created'))
+        {
+            console.log('WT Spam protection - caused by ' + msg.author.username);
+        }
+
+    else if (msg.content === commands[4].getCallName() && !wtCoolDown.has('created'))
     {
               //watch2gether automatic room creation function
                 let url = 'https://www.watch2gether.com';
@@ -124,21 +130,16 @@ bot.on('message', msg => {
                             
                             let s = 'https://watch2gether.com/rooms/'+streamkey+'?lang=de';
                             msg.reply(s);
-                            console.log(s);
+                            console.log(commands[4].getCallName() + ' - called by ' + msg.author.username);
                         });
                         }
                     });
                 wtCoolDown.add('created');
-                console.log(wtCoolDown)
                 setTimeout(() => {
 
-                // Removes the user from the set after 60 seconds
                 wtCoolDown.delete('created');
                 }, 60 * 1000);
-	}
-	
-	else
-	{
+    } else if (!regularCoolDown.has(msg.author.id)) {
         if (msg.content === commands[0].getCallName()) {
             let url = 'https://thereligionofpeace.com/attacks/attacks.aspx?Yr=Last30/';
             request(url, function (error, response, html) {
@@ -160,6 +161,7 @@ bot.on('message', msg => {
     
                         s = 'in den letzten 30 Tagen gab es ' + attacks + ' islamistische Attacken in ' + countries + ' Ländern.' + ' Dabei wurden ' + killed + ' Menschen getötet und ' + injured + ' verletzt.';
                         msg.reply(s);
+                        console.log(commands[0].getCallName() + ' - called by ' + msg.author.username);
                     });
                 }
             });
@@ -167,6 +169,8 @@ bot.on('message', msg => {
     
         if (msg.content === commands[1].getCallName()) {
             msg.reply('https://www.thereligionofpeace.com/TROP.jpg');
+
+            console.log(commands[1].getCallName() + ' - called by ' + msg.author.username);
         }
     
         if (msg.content === commands[2].getCallName()) {
@@ -195,12 +199,13 @@ bot.on('message', msg => {
                             + '\n'
                             + imageLink;
                         msg.reply(s);
+                        console.log(commands[2].getCallName() + ' - called by ' + msg.author.username);
                     });
                 }
             });
         }
     
-		//INFO ABOUT BOT AND IT'S COMMANDS
+		//INFO ABOUT BOT AND COMMANDS
         if (msg.content === commands[3].getCallName()) {
     
             let cmd_output = [];
@@ -223,12 +228,15 @@ bot.on('message', msg => {
             cmd_string = cmd_string.replace(/,/g, '');
     
             msg.reply(info_text + cmd_string);
+            console.log(commands[3].getCallName() + ' - called by ' + msg.author.username);
         }
     
         regularCoolDown.add(msg.author.id);
-        setTimeout(() => {// Removes the user from the set after 5 seconds
+        setTimeout(() => {
+          // Removes the user from the set after 5 seconds
          regularCoolDown.delete(msg.author.id);
         }, cdSeconds * 1000);
+        }   
     }
 });
 
