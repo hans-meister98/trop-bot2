@@ -57,7 +57,7 @@ bot.on('ready', () => {
     }
 });
 
-bot.on('presenceUpdate', (oldMember, newMember) => {
+/*bot.on('presenceUpdate', (oldMember, newMember) => {
 
     let channel = bot.channels.get(channelId);
 
@@ -70,7 +70,7 @@ bot.on('presenceUpdate', (oldMember, newMember) => {
             }
         }
     }, 3000);
-});
+});*/
 
 bot.on('message', msg => {
 
