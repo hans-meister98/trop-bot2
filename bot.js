@@ -78,12 +78,13 @@ bot.on('message', msg => {
     let c_911 = new Command('!911', 'Islamistische Attacken seit dem 11. September 2001.');
     let c_aow = new Command('!aow', 'Atrocity of the Week - Gräueltat der Woche.');
     let c_bot = new Command('!bot', 'Informationen über den Bot und seine Commands.');
+
     let c_wt = new Command('!wt', 'Erstellt einen neuen Watch2gether Raum.')
 
     let commands = [c_30, c_911, c_aow, c_bot, c_wt];
     let check = false;
 
-    for (let j = 0; j < commands.length; j++)
+    for (let j = 0; j < commands.length - 1; j++)
     {
         if (msg.content === commands[j].getCallName()){
             check = true;
@@ -92,54 +93,14 @@ bot.on('message', msg => {
 
     if (check === true)
     {
-        if(regularCoolDown.has(msg.author.id))
+        if (regularCoolDown.has(msg.author.id))
         {
-            console.log('Regular Spam protection - caused by ' + msg.author.username);
+            var date = new Date();
+            console.log(date + ' - Regular Spam protection - caused by ' + msg.author.username);
         }
 
-        if(wtCoolDown.has('created'))
-        {
-            console.log('WT Spam protection - caused by ' + msg.author.username);
-        }
+        else {
 
-    else if (msg.content === commands[4].getCallName() && !wtCoolDown.has('created'))
-    {
-              //watch2gether automatic room creation function
-                let url = 'https://www.watch2gether.com';
-    
-                request(url, function (error, response, html) {
-                    if (!error) {
-                        let $ = cheerio.load(html);
-                        let s = '';
-        
-                        $('#create_room_form').filter(function () {
-                            let data = $(this);
-                            utf8 = data.find('#create_room_form > input[type="hidden"]:nth-child(1)').val();
-                            authToken = data.find('#create_room_form > input[type="hidden"]:nth-child(2)').val();
-                        });
-        
-                        var myJSONObject = {'utf8':'✓', 'authenticity_token':authToken};
-        
-                        request({
-                            url: "https://www.watch2gether.com/rooms/create",
-                            method: "POST",
-                            json: true,   // <--Very important!!!
-                            body: myJSONObject
-                        }, function (error, response, body){
-                            streamkey = response.body['streamkey'];
-                            
-                            let s = 'https://watch2gether.com/rooms/'+streamkey+'?lang=de';
-                            msg.reply(s);
-                            console.log(commands[4].getCallName() + ' - called by ' + msg.author.username);
-                        });
-                        }
-                    });
-                wtCoolDown.add('created');
-                setTimeout(() => {
-
-                wtCoolDown.delete('created');
-                }, 60 * 1000);
-    } else if (!regularCoolDown.has(msg.author.id)) {
         if (msg.content === commands[0].getCallName()) {
             let url = 'https://thereligionofpeace.com/attacks/attacks.aspx?Yr=Last30/';
             request(url, function (error, response, html) {
@@ -238,6 +199,54 @@ bot.on('message', msg => {
         }, cdSeconds * 1000);
         }   
     }
+
+    if (msg.content === commands[4].getCallName())
+    {
+        if(wtCoolDown.has('created'))
+        {
+            var date = new Date();
+            console.log(date + ' - WT Spam protection - caused by ' + msg.author.username);
+        }
+        
+        else
+        {
+                //watch2gether automatic room creation function
+                    let url = 'https://www.watch2gether.com';
+        
+                    request(url, function (error, response, html) {
+                        if (!error) {
+                            let $ = cheerio.load(html);
+                            let s = '';
+            
+                            $('#create_room_form').filter(function () {
+                                let data = $(this);
+                                utf8 = data.find('#create_room_form > input[type="hidden"]:nth-child(1)').val();
+                                authToken = data.find('#create_room_form > input[type="hidden"]:nth-child(2)').val();
+                            });
+            
+                            var myJSONObject = {'utf8':'✓', 'authenticity_token':authToken};
+            
+                            request({
+                                url: "https://www.watch2gether.com/rooms/create",
+                                method: "POST",
+                                json: true,   // <--Very important!!!
+                                body: myJSONObject
+                            }, function (error, response, body){
+                                streamkey = response.body['streamkey'];
+                                
+                                let s = 'https://watch2gether.com/rooms/'+streamkey+'?lang=de';
+                                msg.reply(s);
+                                console.log(commands[4].getCallName() + ' - called by ' + msg.author.username);
+                            });
+                            }
+                        });
+                    wtCoolDown.add('created');
+                    setTimeout(() => {
+
+                    wtCoolDown.delete('created');
+                    }, 60 * 1000);
+                }
+        }
 });
 
 bot.login(process.env.BOT_TOKEN);
