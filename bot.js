@@ -8,7 +8,7 @@ var Command = require('./command.js');
 
 const channelId = '166812372286046208';
 var now = new Date();
-var baseDate = new Date('5/25/2019');
+var baseDate = new Date('5/26/2019');
 var diff = parseInt((now - baseDate) / (1000 * 60 * 60 * 24));
 var i = 20 + diff;
 
