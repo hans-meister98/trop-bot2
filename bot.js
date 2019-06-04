@@ -8,7 +8,7 @@ var Command = require('./command.js');
 
 const channelId = '166812372286046208';
 var now = new Date();
-var baseDate = new Date('5/26/2019');
+var baseDate = new Date('5/25/2019');
 var diff = parseInt((now - baseDate) / (1000 * 60 * 60 * 24));
 var i = 20 + diff;
 
@@ -24,6 +24,13 @@ bot.on('ready', () => {
         let interval = setInterval(function () {
 
             let date = new Date();
+	    let end;
+		
+            if ((30 - i) < 1){
+                end = 'heute';
+            } else {
+                end = 'in ' + (30 - i) + ' Tagen'
+            }
 
             if (date.getHours() === 17 && date.getMinutes() === 45) {
                 let url = 'https://thereligionofpeace.com';
@@ -41,13 +48,12 @@ bot.on('ready', () => {
                         channel.send(
                             '__**Ramadan Bombathon**__' + '\n'
                             + 'Tag ' + i + '\n'
-                            + 'Ramadan endet in: ' + (31 - i) + ' Tagen' + '\n'
+                            + 'Ramadan endet ' + end + '\n'
                             + imageLink
                         );
 
                         console.log('Message for day ' + i + ' sent.');
                         i++;
-                        console.log('Next day is: ' + i);
                     }
                 });
             }
