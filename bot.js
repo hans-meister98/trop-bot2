@@ -7,16 +7,17 @@ var cheerio = require('cheerio');
 var Command = require('./command.js');
 
 const channelId = '166812372286046208';
-var now = new Date();
+
+/*var now = new Date();
 var baseDate = new Date('5/25/2019');
 var diff = parseInt((now - baseDate) / (1000 * 60 * 60 * 24));
-var i = 20 + diff;
+var i = 20 + diff;*/
 
 let regularCoolDown = new Set();
 let wtCoolDown = new Set();
 let cdSeconds = 7;
 
-bot.on('ready', () => {
+/*bot.on('ready', () => {
     let channel = bot.channels.get(channelId);
     console.log('TROP_Bot started');
 
@@ -61,7 +62,7 @@ bot.on('ready', () => {
     } catch (e) {
         console.log(e);
     }
-});
+});*/
 
 /*bot.on('presenceUpdate', (oldMember, newMember) => {
 
