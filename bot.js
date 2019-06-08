@@ -8,76 +8,9 @@ var Command = require('./command.js');
 
 const channelId = '166812372286046208';
 
-/*var now = new Date();
-var baseDate = new Date('5/25/2019');
-var diff = parseInt((now - baseDate) / (1000 * 60 * 60 * 24));
-var i = 20 + diff;*/
-
 let regularCoolDown = new Set();
 let wtCoolDown = new Set();
-let cdSeconds = 7;
-
-/*bot.on('ready', () => {
-    let channel = bot.channels.get(channelId);
-    console.log('TROP_Bot started');
-
-    try {
-        let interval = setInterval(function () {
-
-            let date = new Date();
-	    let end;
-		
-            if ((30 - i) < 1){
-                end = 'heute';
-            } else {
-                end = 'in ' + (30 - i) + ' Tagen'
-            }
-
-            if (date.getHours() === 17 && date.getMinutes() === 45) {
-                let url = 'https://thereligionofpeace.com';
-                let imageLink;
-
-                request(url, function (error, response, html) {
-                    if (!error) {
-                        let $ = cheerio.load(html);
-
-                        $('#aspnetForm > table > tbody > tr:nth-child(1) > td:nth-child(1) > div').filter(function () {
-                            let data = $(this);
-                            imageLink = data.find('img').attr('src');
-                        });
-
-                        channel.send(
-                            '__**Ramadan Bombathon**__' + '\n'
-                            + 'Tag ' + i + '\n'
-                            + 'Ramadan endet ' + end + '\n'
-                            + imageLink
-                        );
-
-                        console.log('Message for day ' + i + ' sent.');
-                        i++;
-                    }
-                });
-            }
-        }, 60 * 1000);
-    } catch (e) {
-        console.log(e);
-    }
-});*/
-
-/*bot.on('presenceUpdate', (oldMember, newMember) => {
-
-    let channel = bot.channels.get(channelId);
-
-    setTimeout(function () {
-        if (oldMember.presence.status !== newMember.presence.status) {
-            if (newMember.presence.status === 'online' && newMember.user.id === process.env.USER_ID) {
-                channel.send('Fagott2402 ist anwesend.' + '\n'
-							+ 'https://c1.staticflickr.com/1/119/272014930_22441b6263_b.jpg');
-				console.log('Das Fagott ist anwesend.');
-            }
-        }
-    }, 3000);
-});*/
+let cdSeconds = 5;
 
 bot.on('message', msg => {
 
@@ -90,6 +23,7 @@ bot.on('message', msg => {
 
     let commands = [c_30, c_911, c_aow, c_bot, c_wt];
     let check = false;
+    let y = Math.floor((Math.random() * 5000) + 1000);
 
     for (let j = 0; j < commands.length - 1; j++)
     {
@@ -136,7 +70,7 @@ bot.on('message', msg => {
         }
     
         if (msg.content === commands[1].getCallName()) {
-            msg.reply('https://www.thereligionofpeace.com/TROP.jpg');
+            msg.reply('https://www.thereligionofpeace.com/TROP.jpg?' + y);
 
             console.log(commands[1].getCallName() + ' - called by ' + msg.author.username);
         }
